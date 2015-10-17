@@ -1,20 +1,16 @@
+int max(int a, int b) {
+    if (a >= b) return a; 
+    return b;
+}
+
 int rob(int* nums, int numsSize) {
-   int rob_first;
-   int not_rob_first;
-   
-   if (numsSize <= 0) {
-       return 0;
-   }
-   
-   if (numsSize == 1) {
-       return nums[0];
-   } 
-   
-   rob_first  = nums[0] + rob(&nums[2], numsSize - 2);
-   not_rob_first = rob(&nums[1], numsSize - 1);
-   if (rob_first > not_rob_first) {
-       return rob_first;
-   } else {
-       return not_rob_first;
-   }
+int i;
+if (numsSize <= 0) return 0;
+if (numsSize == 1) return nums[0];
+if (numsSize >= 3) nums[2] += nums[0];
+for (i = 3; i < numsSize; i++) {
+    nums[i] += max(nums[i-2], nums[i-3]);
+}
+
+return max(nums[numsSize-1], nums[numsSize-2]);
 }
