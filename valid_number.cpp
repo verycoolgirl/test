@@ -1,4 +1,4 @@
-class Solution {
+  class Solution {
 public:
     bool isDecChar(char c) {
         if ((c >= '0') && (c <= '9')) {
@@ -7,20 +7,39 @@ public:
 
         return false;
     }
-    bool isHexChar(char c) {
-        if ((c >= 'a') && (c <= 'f')) {
-            return true;
+    bool parsenum(string &s, int *start, int end, bool decimal) {
+        bool has_num=false;
+        bool is_decimal = false;
+        if (*start <= end) {
+             if (s[*start] == '+' || s[*start] == '-') {
+                (*start)++;
+             }
+        } 
+        
+        if (*start > end) {
+            return false;
         }
-        if ((c >= 'A') && (c <= 'F')) {
-            return true;
+        for (; *start <= end; (*start)++) {
+            if (s[*start] == '.') {
+                if (!decimal || is_decimal) {
+                    return false;
+                }
+                is_decimal = true;
+                continue;
+            }
+            if (!isDecChar(s[*start])) {
+                return has_num;
+            }           
+            has_num = true;
         }
-        return false;
+        if (has_num == false) {
+            return false;
+        }
+        return true;
     }
     bool isNumber(string s) {
-        int i, ri;
-        bool is_decimal = false;
-        bool has_dec = false;
-        bool has_hex = false;
+        int i, ri, begin;
+        bool result;
         
         // process leading empty space
         for (i = 0; i != s.length(); i++) {
@@ -34,25 +53,19 @@ public:
                 break;
             }
         }
+        begin = i;
+        result = parsenum(s, &i, ri, true);
+        if (i > ri) {
+            return result;
+        }
         
-        for (; i<= ri; i++) {
-            if (s[i] == '.') {
-                if (is_decimal) {
-                    return false;
-                }
-                is_decimal = true;
-                continue;
-            }
-            if (isDecChar(s[i])) {
-                has_dec = true;
-            } else if (isHexChar(s[i]) && !is_decimal) {
-                has_hex = true;
-            } else {
-                return false;
+        if ((s[i] == 'e') && result) {
+            i++;
+            result = parsenum(s, &i, ri, false);
+            if (i > ri) {
+                return result;
             }
         }
-        if (!(is_decimal && has_hex)  && (has_hex || has_dec)) {
-            return true;
-        }
+        return false;
     }
 };
